@@ -93,7 +93,7 @@
   #teacherScreen { padding: 1.5rem; }
   .teacher-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem; }
   .teacher-header h1 { font-size: 1.3rem; font-weight: 800; }
-  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
   .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; text-align: center; }
   .stat-box .val { font-size: 1.9rem; font-weight: 800; font-family: 'JetBrains Mono'; color: var(--accent); }
   .stat-box .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
@@ -232,8 +232,9 @@
     </div>
     <div class="stats-row">
       <div class="stat-box"><div class="val" id="statPlayers">0</div><div class="lbl">Tamamlayan</div></div>
-      <div class="stat-box"><div class="val" id="statAvg">-</div><div class="lbl">Ort. Adım</div></div>
-      <div class="stat-box"><div class="val" id="statBest">-</div><div class="lbl">En İyi</div></div>
+      <div class="stat-box"><div class="val" id="statAvg1" style="color:var(--accent2)">-</div><div class="lbl">1. Oyun Ort.</div></div>
+      <div class="stat-box"><div class="val" id="statAvg2" style="color:var(--green)">-</div><div class="lbl">2. Oyun Ort.</div></div>
+      <div class="stat-box"><div class="val" id="statBest">-</div><div class="lbl">En İyi Toplam</div></div>
     </div>
     <div class="start-btn-wrap">
       <div class="game-status status-waiting" id="gameStatus">⏳ Oyun henüz başlamadı</div>
@@ -347,11 +348,13 @@ async function teacherResetGame(){
 function renderLB(sc){
   document.getElementById('statPlayers').textContent=sc.length;
   if(!sc.length){
-    document.getElementById('statAvg').textContent='-';
+    document.getElementById('statAvg1').textContent='-';
+    document.getElementById('statAvg2').textContent='-';
     document.getElementById('statBest').textContent='-';
     document.getElementById('lbBody').innerHTML='<div class="lb-empty">⏳ Henüz skor yok...</div>';return;
   }
-  document.getElementById('statAvg').textContent=Math.round(sc.reduce((a,b)=>a+b.score,0)/sc.length);
+  document.getElementById('statAvg1').textContent=Math.round(sc.reduce((a,b)=>a+b.s1,0)/sc.length);
+  document.getElementById('statAvg2').textContent=Math.round(sc.reduce((a,b)=>a+b.s2,0)/sc.length);
   document.getElementById('statBest').textContent=sc[0].score;
   const m=['🥇','🥈','🥉'];
   document.getElementById('lbBody').innerHTML=sc.map((s,i)=>`
