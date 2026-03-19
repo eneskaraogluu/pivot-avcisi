@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pivot Avcısı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #060B18; --surface: #0D1526; --card: #121E35; --border: #1E2D4A;
+    --accent: #6C63FF; --accent2: #FF6B9D; --green: #00E5A0; --yellow: #FFD166;
+    --text: #E8EDF5; --muted: #4A5568;
+  }
+  body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* NAME */
+  #nameScreen { align-items: center; justify-content: center; padding: 2rem; text-align: center; background: radial-gradient(ellipse at 30% 20%, #1a0f3c 0%, var(--bg) 60%); }
+  .logo-badge { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.2rem; display: inline-block; }
+  .big-title { font-size: clamp(2.8rem, 9vw, 4.5rem); font-weight: 800; line-height: 1.05; background: linear-gradient(135deg, #fff 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.4rem; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .name-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; max-width: 360px; width: 100%; }
+  .name-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .name-card p { color: var(--muted); font-size: 0.8rem; margin-bottom: 1.2rem; line-height: 1.5; }
+  .input-field { width: 100%; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem; color: var(--text); font-family: 'Space Grotesk'; font-size: 1rem; margin-bottom: 0.85rem; transition: border-color 0.2s; outline: none; }
+  .input-field:focus { border-color: var(--accent); }
+  .btn { padding: 0.85rem 1.4rem; border-radius: 10px; border: none; font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), #8B5CF6); color: white; width: 100%; }
+  .btn-primary:hover { opacity: 0.85; transform: scale(1.02); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: rgba(255,107,107,0.15); color: #FF6B6B; border: 1px solid #FF6B6B; }
+  .btn-danger:hover { background: rgba(255,107,107,0.25); }
+
+  /* GAME */
+  #gameScreen { padding: 1rem; }
+  .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; }
+  .game-title { font-size: 0.95rem; font-weight: 700; }
+  .step-badge { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.8rem; font-family: 'JetBrains Mono'; font-size: 0.85rem; font-weight: 700; }
+  .phase-info { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 0.85rem; }
+  .phase-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; margin-bottom: 0.4rem; }
+  .phase-info h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .phase-info p { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+  .target-info { background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(255,107,157,0.12)); border: 1px solid rgba(108,99,255,0.35); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.75rem; }
+  .target-info .t-icon { font-size: 1.6rem; }
+  .target-info h4 { font-size: 0.7rem; color: var(--muted); }
+  .target-info p { font-size: 0.95rem; font-weight: 700; font-family: 'JetBrains Mono'; }
+  .pivot-instruction { background: rgba(255,209,102,0.1); border: 1px solid rgba(255,209,102,0.3); border-radius: 10px; padding: 0.65rem 0.9rem; margin-bottom: 0.85rem; font-size: 0.78rem; color: var(--yellow); display: none; line-height: 1.4; }
+  .grid-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; font-weight: 600; }
+  .box-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-bottom: 1rem; }
+
+  /* BOX — sadece numara gösterir, tıklayınca değer açılır */
+  .box {
+    aspect-ratio: 1; border-radius: 5px; border: 1px solid var(--border);
+    background: var(--card); cursor: pointer; transition: all 0.15s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono'; position: relative; overflow: hidden;
+  }
+  .box .box-num { font-size: 0.48rem; color: var(--muted); font-weight: 400; }
+  .box .box-val { font-size: 0.62rem; font-weight: 700; display: none; }
+
+  /* hidden = sadece numara */
+  .box.hidden:hover { border-color: var(--accent); background: rgba(108,99,255,0.15); transform: scale(1.08); }
+
+  /* opened = yanlış, içindeki değer göster */
+  .box.opened { background: rgba(255,107,107,0.1); border-color: rgba(255,107,107,0.4); cursor: default; }
+  .box.opened .box-num { color: rgba(255,107,107,0.5); font-size: 0.38rem; }
+  .box.opened .box-val { display: block; color: #FF6B6B; }
+
+  /* found = hedef bulundu */
+  .box.found { background: rgba(0,229,160,0.2); border-color: var(--green); cursor: default; animation: pulse 0.5s ease; }
+  .box.found .box-num { display: none; }
+  .box.found .box-val { display: block; color: var(--green); font-size: 0.7rem; }
+
+  /* eliminated = pivot ile elendi */
+  .box.eliminated { background: rgba(255,255,255,0.01); border-color: transparent; opacity: 0.15; cursor: default; }
+  .box.eliminated .box-num { color: var(--muted); }
+
+  /* pivot-sel = seçilen pivot, sarı */
+  .box.pivot-sel { background: rgba(255,209,102,0.2); border-color: var(--yellow); cursor: default; }
+  .box.pivot-sel .box-num { color: rgba(255,209,102,0.6); font-size: 0.38rem; }
+  .box.pivot-sel .box-val { display: block; color: var(--yellow); }
+
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  /* RESULT */
+  #resultScreen { align-items: center; justify-content: center; padding: 2rem; text-align: center; background: radial-gradient(ellipse at 50% 30%, #0a1a2e 0%, var(--bg) 70%); }
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; max-width: 400px; width: 100%; }
+  .result-icon { font-size: 3.5rem; margin-bottom: 0.75rem; }
+  .result-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .result-card > p { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.2rem; }
+  .score-display { font-family: 'JetBrains Mono'; font-size: 2.8rem; font-weight: 800; color: var(--accent); }
+  .score-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.2rem; }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1.2rem; }
+  .comp-box { background: var(--surface); border-radius: 10px; padding: 0.75rem; }
+  .comp-box .c-val { font-size: 1.5rem; font-weight: 800; font-family: 'JetBrains Mono'; }
+  .comp-box .c-lbl { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+  .insight-box { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.25); border-radius: 10px; padding: 0.85rem; margin-bottom: 1.2rem; font-size: 0.78rem; color: var(--green); line-height: 1.55; text-align: left; }
+  .save-note { font-size: 0.7rem; color: var(--muted); margin-top: 0.6rem; }
+
+  /* TEACHER */
+  #teacherScreen { padding: 1.5rem; }
+  .teacher-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem; }
+  .teacher-header h1 { font-size: 1.3rem; font-weight: 800; }
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+  .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; text-align: center; }
+  .stat-box .val { font-size: 1.9rem; font-weight: 800; font-family: 'JetBrains Mono'; color: var(--accent); }
+  .stat-box .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+  .leaderboard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .lb-header { padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .lb-header h2 { font-size: 0.95rem; font-weight: 700; }
+  .lb-empty { padding: 2.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+  .lb-row { display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: center; padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--border); animation: slideIn 0.3s ease; gap: 0.6rem; }
+  .lb-row:last-child { border-bottom: none; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .lb-rank { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.95rem; }
+  .rank-1{color:#FFD700} .rank-2{color:#C0C0C0} .rank-3{color:#CD7F32}
+  .lb-name { font-weight: 600; font-size: 0.9rem; }
+  .lb-score { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.95rem; color: var(--accent); }
+  .teacher-controls { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* popup overlay */
+  .popup-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 100;
+    align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  .popup-overlay.active { display: flex; }
+  .popup-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; max-width: 320px; width: 100%;
+    text-align: center; animation: popIn 0.2s ease;
+  }
+  @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .popup-box .p-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .popup-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
+  .popup-box p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+  .popup-box .highlight { color: var(--yellow); font-weight: 700; font-family: 'JetBrains Mono'; font-size: 1rem; }
+  .popup-btn { width: 100%; padding: 0.75rem; border-radius: 10px; border: none; font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: linear-gradient(135deg, var(--accent), #8B5CF6); color: white; transition: opacity 0.2s; }
+  .popup-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<!-- NAME -->
+<div id="nameScreen" class="screen active">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;background:radial-gradient(ellipse at 30% 20%, #1a0f3c 0%, var(--bg) 60%)">
+    <div class="logo-badge">🎮 ALGORİTMA OYUNU</div>
+    <div class="big-title">Pivot<br>Avcısı</div>
+    <p class="sub">Gizli dosyayı en az adımda bul!</p>
+    <div class="name-card">
+      <h2>Hazır mısın? 🎯</h2>
+      <p>2 tur oynayacaksın.<br>Tur 1: Klasik arama &nbsp;|&nbsp; Tur 2: Pivot ile arama<br>Hangisi daha hızlı?</p>
+      <input class="input-field" id="nameInput" type="text" placeholder="Adın ne? (örn: Ahmet K.)" maxlength="20">
+      <button class="btn btn-primary" onclick="startGame()">Oyunu Başlat →</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" class="screen">
+  <div class="game-header">
+    <div class="game-title" id="gameTitle">Tur 1 / 2</div>
+    <div class="step-badge">⚡ <span id="stepCount">0</span> adım</div>
+  </div>
+  <div class="phase-info">
+    <div class="phase-badge" id="phaseBadge">TUR 1</div>
+    <h3 id="phaseTitle">Klasik Arama</h3>
+    <p id="phaseDesc"></p>
+  </div>
+  <div class="target-info">
+    <div class="t-icon">🔍</div>
+    <div>
+      <h4>Aranan değer</h4>
+      <p id="targetDisplay">?</p>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <h4>Kalan kutu</h4>
+      <p id="progressDisplay">100</p>
+    </div>
+  </div>
+  <div class="pivot-instruction" id="pivotInstruction">
+    🎯 Bir kutu seç → içindeki sayıyı gör → hedeften büyük mü küçük mü? O taraf silinecek!
+  </div>
+  <div class="grid-label" id="gridLabel">100 Kutu — Tıkla, içine bak!</div>
+  <div class="box-grid" id="boxGrid"></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultScreen" class="screen">
+  <div class="result-card">
+    <div class="result-icon" id="resultIcon">🏆</div>
+    <h2 id="resultTitle">Tebrikler!</h2>
+    <p id="resultMsg"></p>
+    <div class="score-display" id="finalScore">-</div>
+    <div class="score-label">toplam adım (az = iyi 🎯)</div>
+    <div class="comparison">
+      <div class="comp-box">
+        <div class="c-val" id="r1Score" style="color:var(--accent2)">-</div>
+        <div class="c-lbl">Tur 1 — Klasik</div>
+      </div>
+      <div class="comp-box">
+        <div class="c-val" id="r2Score" style="color:var(--green)">-</div>
+        <div class="c-lbl">Tur 2 — Pivot</div>
+      </div>
+    </div>
+    <div class="insight-box" id="insightBox"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="playAgain()">🔄 Tekrar Oyna</button>
+    <div class="save-note">✅ Skorun leaderboard'a kaydedildi</div>
+  </div>
+</div>
+
+<!-- TEACHER -->
+<div id="teacherScreen" class="screen">
+  <div class="teacher-header">
+    <div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.15rem"><span class="live-dot"></span>CANLI</div>
+      <h1>🏆 Leaderboard</h1>
+    </div>
+    <span id="lastUpdate" style="font-size:0.75rem;color:var(--muted)">Bekleniyor...</span>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="val" id="statPlayers">0</div><div class="lbl">Oyuncu</div></div>
+    <div class="stat-box"><div class="val" id="statAvg">-</div><div class="lbl">Ort. Adım</div></div>
+    <div class="stat-box"><div class="val" id="statBest">-</div><div class="lbl">En İyi</div></div>
+  </div>
+  <div class="teacher-controls">
+    <button class="btn btn-danger" onclick="resetGame()">🗑️ Sıfırla</button>
+    <button class="btn btn-outline" onclick="location.href=location.pathname">↩ Oyuna Dön</button>
+  </div>
+  <div class="leaderboard">
+    <div class="lb-header">
+      <h2>Sıralama</h2>
+      <span style="font-size:0.72rem;color:var(--muted)">Her 2 sn güncellenir</span>
+    </div>
+    <div id="lbBody"><div class="lb-empty">⏳ Öğrenciler bekleniyor...</div></div>
+  </div>
+</div>
+
+<!-- POPUP (alert yerine) -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <div class="p-icon" id="popIcon">❓</div>
+    <h3 id="popTitle"></h3>
+    <p id="popBody"></p>
+    <button class="popup-btn" id="popBtn" onclick="closePopup()">Tamam →</button>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'pivot_avcisi_v4';
+let playerName = '', steps1 = 0, steps2 = 0, target = 0;
+// boxes[i] = { value: number, state: 'hidden'|'opened'|'found'|'eliminated'|'pivot-sel' }
+let boxes = [], currentPhase = 1;
+let popupCallback = null;
+
+// ── SCREENS ────────────────────────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── POPUP (alert yerine güzel modal) ──────────────────────────────────────
+function showPopup(icon, title, body, btnText, cb) {
+  document.getElementById('popIcon').textContent = icon;
+  document.getElementById('popTitle').textContent = title;
+  document.getElementById('popBody').innerHTML = body;
+  document.getElementById('popBtn').textContent = btnText || 'Tamam →';
+  popupCallback = cb || null;
+  document.getElementById('popupOverlay').classList.add('active');
+}
+function closePopup() {
+  document.getElementById('popupOverlay').classList.remove('active');
+  if (popupCallback) { const cb = popupCallback; popupCallback = null; cb(); }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('teacher') === '1') {
+    show('teacherScreen');
+    startPolling();
+  } else {
+    show('nameScreen');
+    setTimeout(() => document.getElementById('nameInput').focus(), 200);
+  }
+});
+
+// ── STORAGE ───────────────────────────────────────────────────────────────
+async function loadScores() {
+  try { const r = await window.storage.get(STORAGE_KEY, true); return r ? JSON.parse(r.value) : []; }
+  catch { return []; }
+}
+async function saveScore(name, score, s1, s2) {
+  let sc = await loadScores();
+  sc = sc.filter(s => s.name !== name);
+  sc.push({ name, score, s1, s2, ts: Date.now() });
+  sc.sort((a,b) => a.score - b.score);
+  sc = sc.slice(0, 60);
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(sc), true); } catch {}
+}
+async function resetGame() {
+  if (!confirm('Tüm skorları sıfırla?')) return;
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify([]), true); } catch {}
+  renderLB([]);
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────
+function startPolling() { refreshLB(); setInterval(refreshLB, 2000); }
+async function refreshLB() {
+  const sc = await loadScores(); renderLB(sc);
+  document.getElementById('lastUpdate').textContent = '🔄 ' + new Date().toLocaleTimeString('tr-TR');
+}
+function renderLB(sc) {
+  document.getElementById('statPlayers').textContent = sc.length;
+  if (!sc.length) {
+    document.getElementById('statAvg').textContent = '-';
+    document.getElementById('statBest').textContent = '-';
+    document.getElementById('lbBody').innerHTML = '<div class="lb-empty">⏳ Öğrenciler bekleniyor...</div>';
+    return;
+  }
+  document.getElementById('statAvg').textContent = Math.round(sc.reduce((a,b)=>a+b.score,0)/sc.length);
+  document.getElementById('statBest').textContent = sc[0].score;
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('lbBody').innerHTML = sc.map((s,i) => `
+    <div class="lb-row">
+      <div class="lb-rank ${i<3?'rank-'+(i+1):''}">${i<3?medals[i]:'#'+(i+1)}</div>
+      <div class="lb-name">${esc(s.name)}</div>
+      <div class="lb-score">${s.score} adım</div>
+    </div>`).join('');
+}
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── GAME ──────────────────────────────────────────────────────────────────
+function startGame() {
+  playerName = document.getElementById('nameInput').value.trim();
+  if (!playerName) { alert('Adını yaz!'); return; }
+  initPhase(1); show('gameScreen');
+}
+
+function shuffle(arr) {
+  for (let i=arr.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+}
+
+function initPhase(phase) {
+  currentPhase = phase;
+  if (phase === 1) steps1 = 0; else steps2 = 0;
+
+  // 1-100 karıştır, her kutunun içine bir değer ata
+  const vals = Array.from({length:100},(_,i)=>i+1);
+  shuffle(vals);
+  // Hedef: diziden rastgele bir değer
+  target = vals[Math.floor(Math.random()*100)];
+  boxes = vals.map(v => ({ value: v, state: 'hidden' }));
+
+  document.getElementById('stepCount').textContent = '0';
+  document.getElementById('targetDisplay').textContent = target;
+  document.getElementById('progressDisplay').textContent = '100';
+  document.getElementById('gameTitle').textContent = `Tur ${phase} / 2`;
+
+  if (phase === 1) {
+    setBadge('phaseBadge','TUR 1 — KLASİK','rgba(255,107,157,0.15)','var(--accent2)','var(--accent2)');
+    document.getElementById('phaseTitle').textContent = '🔎 Klasik Sıralı Arama';
+    document.getElementById('phaseDesc').textContent =
+      'Her kutunun içinde gizli bir sayı var. Tıkla ve bak! Hedef sayıyı bulana kadar devam et. Her tıklama = 1 adım.';
+    document.getElementById('pivotInstruction').style.display = 'none';
+    document.getElementById('gridLabel').textContent = '100 Kutu — Tıkla, içine bak!';
+  } else {
+    setBadge('phaseBadge','TUR 2 — PİVOT','rgba(0,229,160,0.15)','var(--green)','var(--green)');
+    document.getElementById('phaseTitle').textContent = '⚡ Pivot ile Randomized Arama';
+    document.getElementById('phaseDesc').textContent =
+      'Bir kutu seç (pivot). İçindeki sayıya bak: hedeften büyükse tüm büyük sayılar elenir, küçükse tüm küçük sayılar elenir. Her pivot = 1 adım!';
+    document.getElementById('pivotInstruction').style.display = 'block';
+    document.getElementById('gridLabel').textContent = 'Pivot Seç! (Herhangi bir kutuya tıkla)';
+  }
+  renderGrid();
+}
+
+function setBadge(id, text, bg, color, border) {
+  const el = document.getElementById(id);
+  el.textContent=text; el.style.background=bg; el.style.color=color; el.style.border=`1px solid ${border}`;
+}
+
+// ── GRID RENDER ───────────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('boxGrid');
+  grid.innerHTML = '';
+  boxes.forEach((b, i) => {
+    const el = document.createElement('div');
+    el.className = 'box ' + b.state;
+
+    const numEl = document.createElement('div');
+    numEl.className = 'box-num';
+    numEl.textContent = i + 1; // Kutu numarası (1-100)
+
+    const valEl = document.createElement('div');
+    valEl.className = 'box-val';
+
+    if (b.state === 'found') {
+      valEl.textContent = '✓';
+    } else if (b.state === 'opened' || b.state === 'pivot-sel') {
+      valEl.textContent = b.value; // Açılmış kutunun değeri
+    }
+
+    el.appendChild(numEl);
+    el.appendChild(valEl);
+
+    if (b.state === 'hidden') {
+      el.onclick = () => clickBox(i);
+    }
+
+    grid.appendChild(el);
+  });
+}
+
+function clickBox(i) {
+  if (currentPhase === 1) clickClassic(i);
+  else clickPivot(i);
+}
+
+// ── PHASE 1: KLASİK ──────────────────────────────────────────────────────
+function clickClassic(i) {
+  const b = boxes[i];
+  if (b.state !== 'hidden') return;
+  steps1++;
+  document.getElementById('stepCount').textContent = steps1;
+
+  if (b.value === target) {
+    // BULDU!
+    b.state = 'found';
+    renderGrid();
+    setTimeout(() => {
+      showPopup('✅', 'Buldun!',
+        `Kutu #${i+1} içindeki değer <span class="highlight">${b.value}</span> — bu tam aradığımız!<br><br>
+        <b>${steps1} adımda</b> buldun. Şimdi Tur 2 — pivot ile dene!`,
+        'Tur 2\'ye Geç →',
+        () => initPhase(2)
+      );
+    }, 400);
+  } else {
+    // Yanlış kutu — değeri göster
+    b.state = 'opened';
+    document.getElementById('progressDisplay').textContent =
+      boxes.filter(x => x.state === 'hidden').length;
+    renderGrid();
+  }
+}
+
+// ── PHASE 2: PİVOT ───────────────────────────────────────────────────────
+function clickPivot(i) {
+  const b = boxes[i];
+  if (b.state !== 'hidden') return;
+  steps2++;
+  document.getElementById('stepCount').textContent = steps2;
+
+  // Pivot değerini göster
+  b.state = 'pivot-sel';
+  renderGrid();
+
+  const pivotVal = b.value;
+
+  if (pivotVal === target) {
+    // Pivot'un kendisi hedef!
+    b.state = 'found';
+    renderGrid();
+    setTimeout(showResult, 400);
+    return;
+  }
+
+  // Pivot hedeften büyük mü küçük mü?
+  const pivotSmaller = pivotVal < target;
+  // pivotSmaller = true  → pivot küçük → pivot ve daha küçükler elenecek (hedef sağ tarafta)
+  // pivotSmaller = false → pivot büyük → pivot ve daha büyükler elenecek (hedef sol tarafta)
+
+  const eliminateCount = boxes.filter(x =>
+    x.state === 'hidden' &&
+    (pivotSmaller ? x.value <= pivotVal : x.value >= pivotVal)
+  ).length + 1; // +1 pivot kendisi
+
+  setTimeout(() => {
+    showPopup(
+      pivotSmaller ? '⬆️' : '⬇️',
+      pivotSmaller ? 'Pivot Küçük!' : 'Pivot Büyük!',
+      `Pivot değeri: <span class="highlight">${pivotVal}</span> &nbsp;|&nbsp; Hedef: <span class="highlight">${target}</span><br><br>
+       ${pivotSmaller
+         ? `Pivot <b>${pivotVal}</b> < Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha küçük</b> tüm sayılar eleniyor.`
+         : `Pivot <b>${pivotVal}</b> > Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha büyük</b> tüm sayılar eleniyor.`
+       }<br><br>
+       <span style="color:var(--green)">~${eliminateCount} kutu elendi!</span>`,
+      'Devam Et →',
+      () => {
+        // Eleme: pivot değerine göre (kutu index'ine değil, VALUE'ya göre!)
+        boxes.forEach(box => {
+          if (box.state === 'hidden' || box.state === 'pivot-sel') {
+            if (pivotSmaller && box.value <= pivotVal) box.state = 'eliminated';
+            else if (!pivotSmaller && box.value >= pivotVal) box.state = 'eliminated';
+          }
+        });
+
+        const remaining = boxes.filter(x => x.state === 'hidden').length;
+        document.getElementById('progressDisplay').textContent = remaining;
+        document.getElementById('gridLabel').textContent =
+          remaining > 0 ? `${remaining} kutu kaldı — Pivot Seç!` : 'Son kutu!';
+        renderGrid();
+
+        if (remaining === 0) showResult();
+      }
+    );
+  }, 300);
+}
+
+// ── RESULT ────────────────────────────────────────────────────────────────
+function showResult() {
+  const total = steps1 + steps2, diff = steps1 - steps2;
+  document.getElementById('finalScore').textContent = total;
+  document.getElementById('r1Score').textContent = steps1;
+  document.getElementById('r2Score').textContent = steps2;
+
+  let icon, title, msg, insight;
+  if (diff > 0) {
+    icon='🚀'; title='Pivot Kazandı!'; msg=`${diff} adım daha az kullandın!`;
+    insight=`Klasik aramada ${steps1} adım harcadın. Pivot ile sadece ${steps2} adım. ` +
+      `Her turda pivot değerine göre yarıyı eleyerek ilerlemek — ` +
+      `işte Randomized SELECT algoritmasının gücü!`;
+  } else if (diff < 0) {
+    icon='😅'; title='Bu sefer klasik kazandı!'; msg=`Ama bu şans eseri — ortalamada pivot çok daha iyidir.`;
+    insight=`Randomized algoritmaların püf noktası: en kötü durumda şanssız olabilirsin, ` +
+      `ama beklenen ortalamada klasiği geçer. Bir daha oyna, pivotun gücünü gör!`;
+  } else {
+    icon='⚖️'; title='Beraberlik!'; msg=`Her iki yöntem de ${steps1} adım sürdü.`;
+    insight=`Nadir bir beraberlik! Büyük veri setlerinde pivot algoritması klasiği açık ara geçer ` +
+      `— O(n) ile O(n log n) farkı milyonlarca sayıda çok belirgin.`;
+  }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('insightBox').textContent = insight;
+  saveScore(playerName, total, steps1, steps2);
+  show('resultScreen');
+}
+
+function playAgain() { show('nameScreen'); }
+</script>
+</body>
+</html>
