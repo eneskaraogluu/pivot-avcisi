@@ -33,6 +33,22 @@
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-danger { background: rgba(255,107,107,0.15); color: #FF6B6B; border: 1px solid #FF6B6B; }
   .btn-danger:hover { background: rgba(255,107,107,0.25); }
+  .btn-green { background: linear-gradient(135deg, #00b377, #00E5A0); color: #060B18; font-weight: 800; width: 100%; font-size: 1.1rem; padding: 1rem; border-radius: 12px; }
+  .btn-green:hover { opacity: 0.9; transform: scale(1.02); }
+
+  /* WAITING */
+  #waitingScreen { align-items: center; justify-content: center; padding: 2rem; text-align: center; background: radial-gradient(ellipse at 50% 50%, #0f1a35 0%, var(--bg) 70%); }
+  .waiting-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem 2rem; max-width: 360px; width: 100%; }
+  .pulse-ring { width: 80px; height: 80px; border-radius: 50%; background: rgba(108,99,255,0.15); border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; animation: ringPulse 2s infinite; }
+  @keyframes ringPulse { 0%,100%{box-shadow:0 0 0 0 rgba(108,99,255,0.4)} 50%{box-shadow:0 0 0 16px rgba(108,99,255,0)} }
+  .waiting-card h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .waiting-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.5rem; }
+  .waiting-name { background: var(--surface); border-radius: 10px; padding: 0.6rem 1rem; font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-bottom: 1.5rem; }
+  .dot-loader { display: flex; gap: 6px; justify-content: center; }
+  .dot-loader span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: dotBounce 1.2s infinite; }
+  .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBounce { 0%,80%,100%{transform:scale(0.8);opacity:0.5} 40%{transform:scale(1.2);opacity:1} }
 
   /* GAME */
   #gameScreen { padding: 1rem; }
@@ -50,39 +66,20 @@
   .pivot-instruction { background: rgba(255,209,102,0.1); border: 1px solid rgba(255,209,102,0.3); border-radius: 10px; padding: 0.65rem 0.9rem; margin-bottom: 0.85rem; font-size: 0.78rem; color: var(--yellow); display: none; line-height: 1.4; }
   .grid-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; font-weight: 600; }
   .box-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-bottom: 1rem; }
-
-  /* BOX — sadece numara gösterir, tıklayınca değer açılır */
-  .box {
-    aspect-ratio: 1; border-radius: 5px; border: 1px solid var(--border);
-    background: var(--card); cursor: pointer; transition: all 0.15s;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono'; position: relative; overflow: hidden;
-  }
+  .box { aspect-ratio: 1; border-radius: 5px; border: 1px solid var(--border); background: var(--card); cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; }
   .box .box-num { font-size: 0.48rem; color: var(--muted); font-weight: 400; }
   .box .box-val { font-size: 0.62rem; font-weight: 700; display: none; }
-
-  /* hidden = sadece numara */
   .box.hidden:hover { border-color: var(--accent); background: rgba(108,99,255,0.15); transform: scale(1.08); }
-
-  /* opened = yanlış, içindeki değer göster */
   .box.opened { background: rgba(255,107,107,0.1); border-color: rgba(255,107,107,0.4); cursor: default; }
   .box.opened .box-num { color: rgba(255,107,107,0.5); font-size: 0.38rem; }
   .box.opened .box-val { display: block; color: #FF6B6B; }
-
-  /* found = hedef bulundu */
   .box.found { background: rgba(0,229,160,0.2); border-color: var(--green); cursor: default; animation: pulse 0.5s ease; }
   .box.found .box-num { display: none; }
   .box.found .box-val { display: block; color: var(--green); font-size: 0.7rem; }
-
-  /* eliminated = pivot ile elendi */
   .box.eliminated { background: rgba(255,255,255,0.01); border-color: transparent; opacity: 0.15; cursor: default; }
-  .box.eliminated .box-num { color: var(--muted); }
-
-  /* pivot-sel = seçilen pivot, sarı */
   .box.pivot-sel { background: rgba(255,209,102,0.2); border-color: var(--yellow); cursor: default; }
   .box.pivot-sel .box-num { color: rgba(255,209,102,0.6); font-size: 0.38rem; }
   .box.pivot-sel .box-val { display: block; color: var(--yellow); }
-
   @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
 
   /* RESULT */
@@ -108,6 +105,15 @@
   .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; text-align: center; }
   .stat-box .val { font-size: 1.9rem; font-weight: 800; font-family: 'JetBrains Mono'; color: var(--accent); }
   .stat-box .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+  .start-btn-wrap { margin-bottom: 1.2rem; }
+  .btn-start-game { width: 100%; padding: 1rem; border-radius: 14px; border: none; font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; background: linear-gradient(135deg, #00b377, #00E5A0); color: #060B18; }
+  .btn-start-game:hover { opacity: 0.9; transform: scale(1.01); }
+  .btn-start-game:disabled { background: var(--card); color: var(--muted); cursor: default; transform: none; }
+  .btn-reset-game { width: 100%; padding: 0.7rem; border-radius: 10px; border: none; font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: rgba(255,107,107,0.15); color: #FF6B6B; border: 1px solid #FF6B6B; margin-top: 0.6rem; }
+  .btn-reset-game:hover { background: rgba(255,107,107,0.25); }
+  .game-status { text-align: center; padding: 0.6rem; border-radius: 10px; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .status-waiting { background: rgba(255,209,102,0.1); color: var(--yellow); border: 1px solid rgba(255,209,102,0.3); }
+  .status-started { background: rgba(0,229,160,0.1); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
   .leaderboard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
   .lb-header { padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .lb-header h2 { font-size: 0.95rem; font-weight: 700; }
@@ -119,28 +125,19 @@
   .rank-1{color:#FFD700} .rank-2{color:#C0C0C0} .rank-3{color:#CD7F32}
   .lb-name { font-weight: 600; font-size: 0.9rem; }
   .lb-score { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.95rem; color: var(--accent); }
-  .teacher-controls { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
   .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: blink 1.5s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* popup overlay */
-  .popup-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); z-index: 100;
-    align-items: center; justify-content: center; padding: 1.5rem;
-  }
+  /* POPUP */
+  .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; padding: 1.5rem; }
   .popup-overlay.active { display: flex; }
-  .popup-box {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 1.5rem; max-width: 320px; width: 100%;
-    text-align: center; animation: popIn 0.2s ease;
-  }
+  .popup-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-width: 320px; width: 100%; text-align: center; animation: popIn 0.2s ease; }
   @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
   .popup-box .p-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
   .popup-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
   .popup-box p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
   .popup-box .highlight { color: var(--yellow); font-weight: 700; font-family: 'JetBrains Mono'; font-size: 1rem; }
-  .popup-btn { width: 100%; padding: 0.75rem; border-radius: 10px; border: none; font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: linear-gradient(135deg, var(--accent), #8B5CF6); color: white; transition: opacity 0.2s; }
+  .popup-btn { width: 100%; padding: 0.75rem; border-radius: 10px; border: none; font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: linear-gradient(135deg, var(--accent), #8B5CF6); color: white; }
   .popup-btn:hover { opacity: 0.85; }
 </style>
 </head>
@@ -156,7 +153,22 @@
       <h2>Hazır mısın? 🎯</h2>
       <p>2 tur oynayacaksın.<br>Tur 1: Klasik arama &nbsp;|&nbsp; Tur 2: Pivot ile arama<br>Hangisi daha hızlı?</p>
       <input class="input-field" id="nameInput" type="text" placeholder="Adın ne? (örn: Ahmet K.)" maxlength="20">
-      <button class="btn btn-primary" onclick="startGame()">Oyunu Başlat →</button>
+      <button class="btn btn-primary" onclick="registerPlayer()">Hazırım, Bekleyeyim →</button>
+    </div>
+  </div>
+</div>
+
+<!-- WAITING -->
+<div id="waitingScreen" class="screen">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;background:radial-gradient(ellipse at 50% 50%, #0f1a35 0%, var(--bg) 70%)">
+    <div class="waiting-card">
+      <div class="pulse-ring">⏳</div>
+      <h2>Öğretmen başlatacak!</h2>
+      <p>Herkes girene kadar bekle.<br>Oyun başlayınca ekranın otomatik açılacak.</p>
+      <div class="waiting-name" id="waitingName">👤 —</div>
+      <div class="dot-loader">
+        <span></span><span></span><span></span>
+      </div>
     </div>
   </div>
 </div>
@@ -210,38 +222,44 @@
     </div>
     <div class="insight-box" id="insightBox"></div>
     <button class="btn btn-primary" style="width:100%" onclick="playAgain()">🔄 Tekrar Oyna</button>
-    <div class="save-note">✅ Skorun leaderboard'a kaydedildi</div>
+    <div class="save-note" id="saveNote">💾 Skor kaydediliyor...</div>
   </div>
 </div>
 
 <!-- TEACHER -->
 <div id="teacherScreen" class="screen">
-  <div class="teacher-header">
-    <div>
-      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.15rem"><span class="live-dot"></span>CANLI</div>
-      <h1>🏆 Leaderboard</h1>
+  <div style="padding:1.5rem">
+    <div class="teacher-header">
+      <div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.15rem"><span class="live-dot"></span>CANLI</div>
+        <h1>🏆 Öğretmen Paneli</h1>
+      </div>
+      <span id="lastUpdate" style="font-size:0.75rem;color:var(--muted)">Bekleniyor...</span>
     </div>
-    <span id="lastUpdate" style="font-size:0.75rem;color:var(--muted)">Bekleniyor...</span>
-  </div>
-  <div class="stats-row">
-    <div class="stat-box"><div class="val" id="statPlayers">0</div><div class="lbl">Oyuncu</div></div>
-    <div class="stat-box"><div class="val" id="statAvg">-</div><div class="lbl">Ort. Adım</div></div>
-    <div class="stat-box"><div class="val" id="statBest">-</div><div class="lbl">En İyi</div></div>
-  </div>
-  <div class="teacher-controls">
-    <button class="btn btn-danger" onclick="resetGame()">🗑️ Sıfırla</button>
-    <button class="btn btn-outline" onclick="location.href=location.pathname">↩ Oyuna Dön</button>
-  </div>
-  <div class="leaderboard">
-    <div class="lb-header">
-      <h2>Sıralama</h2>
-      <span style="font-size:0.72rem;color:var(--muted)">Her 2 sn güncellenir</span>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="val" id="statPlayers">0</div><div class="lbl">Bekleyen</div></div>
+      <div class="stat-box"><div class="val" id="statAvg">-</div><div class="lbl">Ort. Adım</div></div>
+      <div class="stat-box"><div class="val" id="statBest">-</div><div class="lbl">En İyi</div></div>
     </div>
-    <div id="lbBody"><div class="lb-empty">⏳ Öğrenciler bekleniyor...</div></div>
+
+    <div class="start-btn-wrap">
+      <div class="game-status status-waiting" id="gameStatus">⏳ Oyun henüz başlamadı</div>
+      <button class="btn-start-game" id="startGameBtn" onclick="teacherStartGame()">🚀 Oyunu Başlat!</button>
+      <button class="btn-reset-game" onclick="teacherResetGame()">🔄 Sıfırla (Yeni Tur)</button>
+    </div>
+
+    <div class="leaderboard">
+      <div class="lb-header">
+        <h2>🏆 Sıralama</h2>
+        <span style="font-size:0.72rem;color:var(--muted)">Her 3 sn güncellenir</span>
+      </div>
+      <div id="lbBody"><div class="lb-empty">⏳ Öğrenciler bekleniyor...</div></div>
+    </div>
   </div>
 </div>
 
-<!-- POPUP (alert yerine) -->
+<!-- POPUP -->
 <div class="popup-overlay" id="popupOverlay">
   <div class="popup-box">
     <div class="p-icon" id="popIcon">❓</div>
@@ -252,11 +270,77 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'pivot_avcisi_v4';
+// ── SUPABASE CONFIG ────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://mxnjaslhnwejoinbqxuu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1-zWPIT0wcFmVwnJ9ZOBlA_kVeioJIM';
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'apikey': SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY
+};
+
+// ── DB FUNCTIONS ───────────────────────────────────────────────────────────
+async function dbGetGameState() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/game_state?id=eq.1&select=started`, { headers: HEADERS });
+    const data = await res.json();
+    return data[0]?.started ?? false;
+  } catch { return false; }
+}
+
+async function dbSetGameState(started) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/game_state?id=eq.1`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ started })
+    });
+    return true;
+  } catch { return false; }
+}
+
+async function dbLoadScores() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/scores?select=*&order=score.asc&limit=60`, { headers: HEADERS });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+async function dbSaveScore(name, score, s1, s2) {
+  try {
+    const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/scores?name=eq.${encodeURIComponent(name)}&select=id`, { headers: HEADERS });
+    const existing = await checkRes.json();
+    if (existing.length > 0) {
+      await fetch(`${SUPABASE_URL}/rest/v1/scores?name=eq.${encodeURIComponent(name)}`, {
+        method: 'PATCH',
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ score, s1, s2 })
+      });
+    } else {
+      await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+        method: 'POST',
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ name, score, s1, s2 })
+      });
+    }
+    return true;
+  } catch { return false; }
+}
+
+async function dbResetScores() {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/scores?id=gte.0`, { method: 'DELETE', headers: HEADERS });
+    return true;
+  } catch { return false; }
+}
+
+// ── STATE ──────────────────────────────────────────────────────────────────
 let playerName = '', steps1 = 0, steps2 = 0, target = 0;
-// boxes[i] = { value: number, state: 'hidden'|'opened'|'found'|'eliminated'|'pivot-sel' }
 let boxes = [], currentPhase = 1;
 let popupCallback = null;
+let waitingInterval = null;
+let teacherInterval = null;
 
 // ── SCREENS ────────────────────────────────────────────────────────────────
 function show(id) {
@@ -264,7 +348,7 @@ function show(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ── POPUP (alert yerine güzel modal) ──────────────────────────────────────
+// ── POPUP ──────────────────────────────────────────────────────────────────
 function showPopup(icon, title, body, btnText, cb) {
   document.getElementById('popIcon').textContent = icon;
   document.getElementById('popTitle').textContent = title;
@@ -278,49 +362,92 @@ function closePopup() {
   if (popupCallback) { const cb = popupCallback; popupCallback = null; cb(); }
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
   if (params.get('teacher') === '1') {
     show('teacherScreen');
-    startPolling();
+    startTeacherPolling();
   } else {
     show('nameScreen');
     setTimeout(() => document.getElementById('nameInput').focus(), 200);
   }
 });
 
-// ── STORAGE ───────────────────────────────────────────────────────────────
-async function loadScores() {
-  try { const r = await window.storage.get(STORAGE_KEY, true); return r ? JSON.parse(r.value) : []; }
-  catch { return []; }
-}
-async function saveScore(name, score, s1, s2) {
-  let sc = await loadScores();
-  sc = sc.filter(s => s.name !== name);
-  sc.push({ name, score, s1, s2, ts: Date.now() });
-  sc.sort((a,b) => a.score - b.score);
-  sc = sc.slice(0, 60);
-  try { await window.storage.set(STORAGE_KEY, JSON.stringify(sc), true); } catch {}
-}
-async function resetGame() {
-  if (!confirm('Tüm skorları sıfırla?')) return;
-  try { await window.storage.set(STORAGE_KEY, JSON.stringify([]), true); } catch {}
-  renderLB([]);
+// ── STUDENT: REGISTER & WAIT ───────────────────────────────────────────────
+async function registerPlayer() {
+  playerName = document.getElementById('nameInput').value.trim();
+  if (!playerName) { alert('Adını yaz!'); return; }
+
+  document.getElementById('waitingName').textContent = '👤 ' + playerName;
+  show('waitingScreen');
+
+  // Oyun zaten başlamış mı kontrol et
+  const started = await dbGetGameState();
+  if (started) { startActualGame(); return; }
+
+  // Her 2 saniyede kontrol et
+  waitingInterval = setInterval(async () => {
+    const started = await dbGetGameState();
+    if (started) {
+      clearInterval(waitingInterval);
+      startActualGame();
+    }
+  }, 2000);
 }
 
-// ── LEADERBOARD ───────────────────────────────────────────────────────────
-function startPolling() { refreshLB(); setInterval(refreshLB, 2000); }
-async function refreshLB() {
-  const sc = await loadScores(); renderLB(sc);
+function startActualGame() {
+  initPhase(1);
+  show('gameScreen');
+}
+
+// ── TEACHER ────────────────────────────────────────────────────────────────
+function startTeacherPolling() {
+  refreshTeacher();
+  teacherInterval = setInterval(refreshTeacher, 3000);
+}
+
+async function refreshTeacher() {
+  const [scores, started] = await Promise.all([dbLoadScores(), dbGetGameState()]);
+  renderLB(scores);
+
+  const statusEl = document.getElementById('gameStatus');
+  const btnEl = document.getElementById('startGameBtn');
+  if (started) {
+    statusEl.textContent = '🟢 Oyun başladı! Öğrenciler oynuyor...';
+    statusEl.className = 'game-status status-started';
+    btnEl.textContent = '✅ Oyun Başlatıldı';
+    btnEl.disabled = true;
+  } else {
+    statusEl.textContent = '⏳ Oyun henüz başlamadı';
+    statusEl.className = 'game-status status-waiting';
+    btnEl.textContent = '🚀 Oyunu Başlat!';
+    btnEl.disabled = false;
+  }
+
   document.getElementById('lastUpdate').textContent = '🔄 ' + new Date().toLocaleTimeString('tr-TR');
 }
+
+async function teacherStartGame() {
+  document.getElementById('startGameBtn').textContent = '⏳ Başlatılıyor...';
+  document.getElementById('startGameBtn').disabled = true;
+  await dbSetGameState(true);
+  await refreshTeacher();
+}
+
+async function teacherResetGame() {
+  if (!confirm('Tüm skorları sıfırla ve oyunu resetle?')) return;
+  await Promise.all([dbResetScores(), dbSetGameState(false)]);
+  await refreshTeacher();
+}
+
+// ── LEADERBOARD ────────────────────────────────────────────────────────────
 function renderLB(sc) {
   document.getElementById('statPlayers').textContent = sc.length;
   if (!sc.length) {
     document.getElementById('statAvg').textContent = '-';
     document.getElementById('statBest').textContent = '-';
-    document.getElementById('lbBody').innerHTML = '<div class="lb-empty">⏳ Öğrenciler bekleniyor...</div>';
+    document.getElementById('lbBody').innerHTML = '<div class="lb-empty">⏳ Henüz skor yok...</div>';
     return;
   }
   document.getElementById('statAvg').textContent = Math.round(sc.reduce((a,b)=>a+b.score,0)/sc.length);
@@ -333,50 +460,41 @@ function renderLB(sc) {
       <div class="lb-score">${s.score} adım</div>
     </div>`).join('');
 }
+
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── GAME ──────────────────────────────────────────────────────────────────
-function startGame() {
-  playerName = document.getElementById('nameInput').value.trim();
-  if (!playerName) { alert('Adını yaz!'); return; }
-  initPhase(1); show('gameScreen');
-}
-
+// ── GAME ───────────────────────────────────────────────────────────────────
 function shuffle(arr) {
   for (let i=arr.length-1;i>0;i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
 }
 
 function initPhase(phase) {
   currentPhase = phase;
-  if (phase === 1) steps1 = 0; else steps2 = 0;
+  if (phase===1) steps1=0; else steps2=0;
 
-  // 1-100 karıştır, her kutunun içine bir değer ata
   const vals = Array.from({length:100},(_,i)=>i+1);
   shuffle(vals);
-  // Hedef: diziden rastgele bir değer
   target = vals[Math.floor(Math.random()*100)];
-  boxes = vals.map(v => ({ value: v, state: 'hidden' }));
+  boxes = vals.map(v => ({ value:v, state:'hidden' }));
 
   document.getElementById('stepCount').textContent = '0';
   document.getElementById('targetDisplay').textContent = target;
   document.getElementById('progressDisplay').textContent = '100';
   document.getElementById('gameTitle').textContent = `Tur ${phase} / 2`;
 
-  if (phase === 1) {
+  if (phase===1) {
     setBadge('phaseBadge','TUR 1 — KLASİK','rgba(255,107,157,0.15)','var(--accent2)','var(--accent2)');
     document.getElementById('phaseTitle').textContent = '🔎 Klasik Sıralı Arama';
-    document.getElementById('phaseDesc').textContent =
-      'Her kutunun içinde gizli bir sayı var. Tıkla ve bak! Hedef sayıyı bulana kadar devam et. Her tıklama = 1 adım.';
+    document.getElementById('phaseDesc').textContent = 'Her kutunun içinde gizli bir sayı var. Tıkla ve bak! Hedef sayıyı bulana kadar devam et. Her tıklama = 1 adım.';
     document.getElementById('pivotInstruction').style.display = 'none';
     document.getElementById('gridLabel').textContent = '100 Kutu — Tıkla, içine bak!';
   } else {
     setBadge('phaseBadge','TUR 2 — PİVOT','rgba(0,229,160,0.15)','var(--green)','var(--green)');
     document.getElementById('phaseTitle').textContent = '⚡ Pivot ile Randomized Arama';
-    document.getElementById('phaseDesc').textContent =
-      'Bir kutu seç (pivot). İçindeki sayıya bak: hedeften büyükse tüm büyük sayılar elenir, küçükse tüm küçük sayılar elenir. Her pivot = 1 adım!';
+    document.getElementById('phaseDesc').textContent = 'Bir kutu seç (pivot). İçindeki sayıya bak: hedeften büyükse tüm büyük sayılar elenir, küçükse tüm küçük sayılar elenir. Her pivot = 1 adım!';
     document.getElementById('pivotInstruction').style.display = 'block';
     document.getElementById('gridLabel').textContent = 'Pivot Seç! (Herhangi bir kutuya tıkla)';
   }
@@ -388,166 +506,125 @@ function setBadge(id, text, bg, color, border) {
   el.textContent=text; el.style.background=bg; el.style.color=color; el.style.border=`1px solid ${border}`;
 }
 
-// ── GRID RENDER ───────────────────────────────────────────────────────────
 function renderGrid() {
   const grid = document.getElementById('boxGrid');
   grid.innerHTML = '';
-  boxes.forEach((b, i) => {
+  boxes.forEach((b,i) => {
     const el = document.createElement('div');
     el.className = 'box ' + b.state;
-
     const numEl = document.createElement('div');
     numEl.className = 'box-num';
-    numEl.textContent = i + 1; // Kutu numarası (1-100)
-
+    numEl.textContent = i+1;
     const valEl = document.createElement('div');
     valEl.className = 'box-val';
-
-    if (b.state === 'found') {
-      valEl.textContent = '✓';
-    } else if (b.state === 'opened' || b.state === 'pivot-sel') {
-      valEl.textContent = b.value; // Açılmış kutunun değeri
-    }
-
-    el.appendChild(numEl);
-    el.appendChild(valEl);
-
-    if (b.state === 'hidden') {
-      el.onclick = () => clickBox(i);
-    }
-
+    if (b.state==='found') valEl.textContent='✓';
+    else if (b.state==='opened'||b.state==='pivot-sel') valEl.textContent=b.value;
+    el.appendChild(numEl); el.appendChild(valEl);
+    if (b.state==='hidden') el.onclick = () => clickBox(i);
     grid.appendChild(el);
   });
 }
 
 function clickBox(i) {
-  if (currentPhase === 1) clickClassic(i);
-  else clickPivot(i);
+  if (currentPhase===1) clickClassic(i); else clickPivot(i);
 }
 
-// ── PHASE 1: KLASİK ──────────────────────────────────────────────────────
 function clickClassic(i) {
   const b = boxes[i];
-  if (b.state !== 'hidden') return;
+  if (b.state!=='hidden') return;
   steps1++;
   document.getElementById('stepCount').textContent = steps1;
-
-  if (b.value === target) {
-    // BULDU!
-    b.state = 'found';
-    renderGrid();
+  if (b.value===target) {
+    b.state='found'; renderGrid();
     setTimeout(() => {
-      showPopup('✅', 'Buldun!',
-        `Kutu #${i+1} içindeki değer <span class="highlight">${b.value}</span> — bu tam aradığımız!<br><br>
+      showPopup('✅','Buldun!',
+        `Kutu #${i+1} içindeki değer <span class="highlight">${b.value}</span> — tam aradığımız!<br><br>
         <b>${steps1} adımda</b> buldun. Şimdi Tur 2 — pivot ile dene!`,
-        'Tur 2\'ye Geç →',
-        () => initPhase(2)
-      );
+        'Tur 2\'ye Geç →', () => initPhase(2));
     }, 400);
   } else {
-    // Yanlış kutu — değeri göster
-    b.state = 'opened';
-    document.getElementById('progressDisplay').textContent =
-      boxes.filter(x => x.state === 'hidden').length;
+    b.state='opened';
+    document.getElementById('progressDisplay').textContent = boxes.filter(x=>x.state==='hidden').length;
     renderGrid();
   }
 }
 
-// ── PHASE 2: PİVOT ───────────────────────────────────────────────────────
 function clickPivot(i) {
   const b = boxes[i];
-  if (b.state !== 'hidden') return;
+  if (b.state!=='hidden') return;
   steps2++;
   document.getElementById('stepCount').textContent = steps2;
-
-  // Pivot değerini göster
-  b.state = 'pivot-sel';
-  renderGrid();
-
-  const pivotVal = b.value;
-
-  if (pivotVal === target) {
-    // Pivot'un kendisi hedef!
-    b.state = 'found';
-    renderGrid();
-    setTimeout(showResult, 400);
-    return;
+  if (b.value===target) {
+    b.state='found'; renderGrid();
+    setTimeout(showResult, 400); return;
   }
-
-  // Pivot hedeften büyük mü küçük mü?
+  b.state='pivot-sel'; renderGrid();
+  const pivotVal = b.value;
   const pivotSmaller = pivotVal < target;
-  // pivotSmaller = true  → pivot küçük → pivot ve daha küçükler elenecek (hedef sağ tarafta)
-  // pivotSmaller = false → pivot büyük → pivot ve daha büyükler elenecek (hedef sol tarafta)
-
   const eliminateCount = boxes.filter(x =>
-    x.state === 'hidden' &&
-    (pivotSmaller ? x.value <= pivotVal : x.value >= pivotVal)
-  ).length + 1; // +1 pivot kendisi
+    x.state==='hidden' && (pivotSmaller ? x.value<=pivotVal : x.value>=pivotVal)
+  ).length + 1;
 
   setTimeout(() => {
     showPopup(
       pivotSmaller ? '⬆️' : '⬇️',
       pivotSmaller ? 'Pivot Küçük!' : 'Pivot Büyük!',
-      `Pivot değeri: <span class="highlight">${pivotVal}</span> &nbsp;|&nbsp; Hedef: <span class="highlight">${target}</span><br><br>
+      `Pivot: <span class="highlight">${pivotVal}</span> &nbsp;|&nbsp; Hedef: <span class="highlight">${target}</span><br><br>
        ${pivotSmaller
-         ? `Pivot <b>${pivotVal}</b> < Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha küçük</b> tüm sayılar eleniyor.`
-         : `Pivot <b>${pivotVal}</b> > Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha büyük</b> tüm sayılar eleniyor.`
-       }<br><br>
-       <span style="color:var(--green)">~${eliminateCount} kutu elendi!</span>`,
+         ? `Pivot <b>${pivotVal}</b> &lt; Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha küçük</b> sayılar eleniyor.`
+         : `Pivot <b>${pivotVal}</b> &gt; Hedef <b>${target}</b><br>→ <b>${pivotVal} ve daha büyük</b> sayılar eleniyor.`
+       }<br><br><span style="color:var(--green)">~${eliminateCount} kutu elendi!</span>`,
       'Devam Et →',
       () => {
-        // Eleme: pivot değerine göre (kutu index'ine değil, VALUE'ya göre!)
         boxes.forEach(box => {
-          if (box.state === 'hidden' || box.state === 'pivot-sel') {
-            if (pivotSmaller && box.value <= pivotVal) box.state = 'eliminated';
-            else if (!pivotSmaller && box.value >= pivotVal) box.state = 'eliminated';
+          if (box.state==='hidden'||box.state==='pivot-sel') {
+            if (pivotSmaller && box.value<=pivotVal) box.state='eliminated';
+            else if (!pivotSmaller && box.value>=pivotVal) box.state='eliminated';
           }
         });
-
-        const remaining = boxes.filter(x => x.state === 'hidden').length;
+        const remaining = boxes.filter(x=>x.state==='hidden').length;
         document.getElementById('progressDisplay').textContent = remaining;
         document.getElementById('gridLabel').textContent =
-          remaining > 0 ? `${remaining} kutu kaldı — Pivot Seç!` : 'Son kutu!';
+          remaining>0 ? `${remaining} kutu kaldı — Pivot Seç!` : 'Son kutu!';
         renderGrid();
-
-        if (remaining === 0) showResult();
+        if (remaining===0) showResult();
       }
     );
   }, 300);
 }
 
-// ── RESULT ────────────────────────────────────────────────────────────────
-function showResult() {
-  const total = steps1 + steps2, diff = steps1 - steps2;
+async function showResult() {
+  const total=steps1+steps2, diff=steps1-steps2;
   document.getElementById('finalScore').textContent = total;
   document.getElementById('r1Score').textContent = steps1;
   document.getElementById('r2Score').textContent = steps2;
 
-  let icon, title, msg, insight;
-  if (diff > 0) {
+  let icon,title,msg,insight;
+  if (diff>0) {
     icon='🚀'; title='Pivot Kazandı!'; msg=`${diff} adım daha az kullandın!`;
-    insight=`Klasik aramada ${steps1} adım harcadın. Pivot ile sadece ${steps2} adım. ` +
-      `Her turda pivot değerine göre yarıyı eleyerek ilerlemek — ` +
-      `işte Randomized SELECT algoritmasının gücü!`;
-  } else if (diff < 0) {
+    insight=`Klasik aramada ${steps1} adım harcadın. Pivot ile sadece ${steps2} adım. Her turda pivot değerine göre yarıyı eleyerek ilerlemek — işte Randomized SELECT algoritmasının gücü!`;
+  } else if (diff<0) {
     icon='😅'; title='Bu sefer klasik kazandı!'; msg=`Ama bu şans eseri — ortalamada pivot çok daha iyidir.`;
-    insight=`Randomized algoritmaların püf noktası: en kötü durumda şanssız olabilirsin, ` +
-      `ama beklenen ortalamada klasiği geçer. Bir daha oyna, pivotun gücünü gör!`;
+    insight=`Randomized algoritmaların püf noktası: en kötü durumda şanssız olabilirsin, ama beklenen ortalamada klasiği geçer. Bir daha oyna, pivotun gücünü gör!`;
   } else {
     icon='⚖️'; title='Beraberlik!'; msg=`Her iki yöntem de ${steps1} adım sürdü.`;
-    insight=`Nadir bir beraberlik! Büyük veri setlerinde pivot algoritması klasiği açık ara geçer ` +
-      `— O(n) ile O(n log n) farkı milyonlarca sayıda çok belirgin.`;
+    insight=`Nadir bir beraberlik! Büyük veri setlerinde pivot algoritması klasiği açık ara geçer — O(n) ile O(n log n) farkı milyonlarca sayıda çok belirgin.`;
   }
 
-  document.getElementById('resultIcon').textContent = icon;
-  document.getElementById('resultTitle').textContent = title;
-  document.getElementById('resultMsg').textContent = msg;
-  document.getElementById('insightBox').textContent = insight;
-  saveScore(playerName, total, steps1, steps2);
+  document.getElementById('resultIcon').textContent=icon;
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultMsg').textContent=msg;
+  document.getElementById('insightBox').textContent=insight;
   show('resultScreen');
+
+  document.getElementById('saveNote').textContent = '💾 Skor kaydediliyor...';
+  const ok = await dbSaveScore(playerName, total, steps1, steps2);
+  document.getElementById('saveNote').textContent = ok ? '✅ Skor leaderboard\'a kaydedildi!' : '⚠️ Skor kaydedilemedi (internet?)';
 }
 
-function playAgain() { show('nameScreen'); }
+function playAgain() {
+  show('nameScreen');
+}
 </script>
 </body>
 </html>
